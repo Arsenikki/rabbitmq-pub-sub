@@ -1,0 +1,43 @@
+version: '3.9'
+
+services:
+  rabbitmq: # login guest:guest
+    image: rabbitmq:3-management
+    hostname: "rabbitmq"
+    labels:
+      NAME: "rabbitmq"
+    ports:
+    - "4369:4369"
+    - "5671:5671"
+    - "5672:5672"
+    - "25672:25672"
+    - "15671:15671"
+    - "15672:15672"  
+
+  rabbitmq-pub-api:
+    build:
+      context: .
+      dockerfile: rabbitmq-pub-api/Dockerfile
+    deploy:
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - 80:80
+
+  rabbitmq-sub-reader:
+    build:
+      context: .
+      dockerfile: rabbitmq-sub-reader/Dockerfile
+    deploy:
+      replicas: 5
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+    depends_on:
+      - "rabbitmq-pub-api"
+      - "rabbitmq"
+
+  
