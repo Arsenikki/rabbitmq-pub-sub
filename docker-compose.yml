@@ -36,6 +36,10 @@ services:
       restart_policy:
         condition: on-failure
         delay: 5s
+    environment:
+      - hostName=host.docker.internal
+      - port=5672
+      - queueName=task-queue
     depends_on:
       - "rabbitmq-pub-api"
       - "rabbitmq"

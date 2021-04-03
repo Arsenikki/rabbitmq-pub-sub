@@ -12,13 +12,17 @@ namespace rabbitmq_sub_reader
     {
         static async Task Main(string[] args)
         {
-            ConnectionFactory factory = new ConnectionFactory() { HostName = "host.docker.internal", Port = 5672, };
+            string hostName = Environment.GetEnvironmentVariable("hostName");
+            int port = int.Parse(Environment.GetEnvironmentVariable("port"));
+            string queueName = Environment.GetEnvironmentVariable("queueName");
+
+            ConnectionFactory factory = new ConnectionFactory() { HostName = hostName, Port = port };
             factory.AutomaticRecoveryEnabled = true;
             factory.UserName = "guest";
             factory.Password = "guest";
             IConnection conn = factory.CreateConnection();
             IModel channel = conn.CreateModel();
-            channel.QueueDeclare(queue: "task-queue",
+            channel.QueueDeclare(queue: queueName,
                                     durable: false,
                                     exclusive: false,
                                     autoDelete: false,
@@ -27,7 +31,7 @@ namespace rabbitmq_sub_reader
 
             var consumer = new EventingBasicConsumer(channel);
 
-            channel.BasicConsume(queue: "task-queue",
+            channel.BasicConsume(queue: queueName,
                 autoAck: false, consumer: consumer);
 
             consumer.Received += (model, ea) =>
