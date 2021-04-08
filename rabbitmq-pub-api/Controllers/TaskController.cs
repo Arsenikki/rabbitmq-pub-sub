@@ -26,10 +26,13 @@ namespace rabbitmq_pub_api.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <param name="name"></param>
+        /// <param name="sleep"></param>
+        /// <param name="count"></param>
         [HttpPost]
-        public void Create(string name, string id, int? sleep)
+        public void Create(string name, string id, int? sleep, int? count)
         {
-            for (int i = 0; i < 100; i++)
+            int _count = count ?? 100;
+            for (int i = 0; i < _count; i++)
             {
                 var job = new Task
                 {
@@ -39,7 +42,7 @@ namespace rabbitmq_pub_api.Controllers
                 };
                 _sender.SendMessage(job);
             }
-            
+
         }
     }
 }

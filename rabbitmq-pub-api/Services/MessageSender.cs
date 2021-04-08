@@ -11,16 +11,19 @@ namespace rabbitmq_pub_api.Services
         ConnectionFactory _factory;
         IConnection _connection;
         IModel _channel;
+        string _hostName = Environment.GetEnvironmentVariable("hostName");
+        int _port = int.Parse(Environment.GetEnvironmentVariable("port"));
+        string _queueName = Environment.GetEnvironmentVariable("queueName");
 
         public MessageSender()
         {
-            _factory = new ConnectionFactory() { HostName = "host.docker.internal", Port = 5672, };
+            _factory = new ConnectionFactory() { HostName = _hostName, Port = _port, };
             _factory.AutomaticRecoveryEnabled = true;
             _factory.UserName = "guest";
             _factory.Password = "guest";
             _connection = _factory.CreateConnection();
             _channel = _connection.CreateModel();
-            _channel.QueueDeclare(queue: "task-queue",
+            _channel.QueueDeclare(queue: _queueName,
                                     durable: false,
                                     exclusive: false,
                                     autoDelete: false,
@@ -33,7 +36,7 @@ namespace rabbitmq_pub_api.Services
             var body = Encoding.UTF8.GetBytes(message);
 
             _channel.BasicPublish(exchange: "",
-                routingKey: "task-queue",
+                routingKey: _queueName,
                 basicProperties: null,
                 body: body
             );
