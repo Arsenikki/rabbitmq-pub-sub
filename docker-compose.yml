@@ -24,6 +24,9 @@ services:
         delay: 5s
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+      - hostName=host.docker.internal
+      - port=5672
+      - queueName=task-queue
     ports:
       - 80:80
 

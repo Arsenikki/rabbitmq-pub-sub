@@ -1,0 +1,15 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: rabbitmq-scaledobject
+  namespace: default
+spec:
+  scaleTargetRef:
+    name: rabbitmq-sub
+  triggers:
+    - type: rabbitmq
+      metadata:
+        host: "amqp://guest:guest@my-rabbit.default.svc.cluster.local:5672"
+        queueName: task-queue
+        mode: QueueLength
+        value: "0"

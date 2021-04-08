@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-rabbit
+spec:
+  selector:
+    matchLabels:
+      app: my-rabbit
+  template:
+    metadata:
+      labels:
+        app: my-rabbit
+    spec:
+      containers:
+        - name: my-rabbit
+          image: rabbitmq:3-management
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "500m"
+          env:
+            - name: "HOSTNAME"
+              value: "my-rabbit"
+          ports:
+            - containerPort: 15672
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: my-rabbit
+spec:
+  selector:
+    app: my-rabbit
+  ports:
+    - port: 5672
+      targetPort: 5672
